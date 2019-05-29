@@ -25,9 +25,14 @@ hostparse domain,tld
 
 Now what is neat with these items is that the tool will match the shortest match without duplicates. This means that instead of typing `tld` you can also type `tl` or even `t` as there are no other items that would conflict. The same query as before can also be written as:
 
-```hostparse d,t
+```
+hostparse d,t
 ```
 
 The only thing to be careful of is the match, for example you can't use `p` for `port` as it will also match other items (the tool will warn you about this and simply return without processing data). You have to get the right match, `po` will work for `ports` however `pa` won't work woth `path` as it will also match `params` which means you have to use `pat` for path.
 
 Additionally the data the tool outputs uses a delimiter based on the items you choose, so if you choose `domain` and `tld` it will be outputed as: `<domain>.<tld>`. You can change this delimiter value with the `-d` operator after you specify the items to filter out. If you don't want a delimiter you can specify it as `-d''`.
+
+## Bugs & Features
+
+Feel free to open issues for features or bugs you've found or do a pull request and you will be rewarded somewhere later in life for it.
