@@ -43,18 +43,15 @@ DATA_MAPPER = dict(
 )
 
 def fill_mappers(url):
-    #print('fill_mappers:',url)
     global DATA_MAPPER
     DATA_MAPPER['tldextract'] = tldextract.extract(url)
     DATA_MAPPER['urlparse'] = urlparse.urlparse(url)
 
 def mapper_func(obj_val):
-    #print('mapper_func:',obj_val)
     return getattr(DATA_MAPPER[obj_val[0]], obj_val[1])
 
 # People will scream at me for this, I like generators.
 def yield_basename(obj_val):
-    #print('yield_basename:',obj_val)
     yield os.path.basename(mapper_func(obj_val))
 
 KEYWORD_MAPPER = {
@@ -76,7 +73,7 @@ KEYWORD_MAPPER = {
 
 def process_args():
     parser = argparse.ArgumentParser(prog='hostparse')
-    parser.add_argument('-d', '--delimiter', dest='delim', default='', help="Output delimiter.")
+    parser.add_argument('-d', '--delimiter', dest='delim', default='.', help="Output delimiter.")
     parser.add_argument('format', nargs=None,
                         help="Format keywords seperated by a comma. Keywords: scheme, username, password, subdomain, \
                         domain, hostname, tld, port, path, filename, params, query, fragment. It matches the shortest \
@@ -103,17 +100,4 @@ def main():
         line = line.rstrip()
         fill_mappers(line)
         print(delim.join([mapper_func(KEYWORD_MAPPER[fk]) for fk in args]))
-        #:
-        #    print('fk: ', fk)
-        #    print('mapped: ', )
-            #print(next(tee(KEYWORD_MAPPER[fk])[1]))
-            #    print('mitem: ', next(mitem))
-        #gval = [
-        #    [sitem for sitem in iter(item)]#str(next(item))
-        #    for item in iter([
-        #        KEYWORD_MAPPER[fk] for fk in args
-        #    ])
-        #]
-        #val = delim.join(gval)#[str(gval) for fk in args])
-        #print(val)
 
