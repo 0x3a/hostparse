@@ -18,6 +18,7 @@ setup(
         include_package_data=True,
         description = 'A command-line client for URL and hostname swizzling ',
         long_description=read('README.md'),
+        long_description_content_type="text/markdown",
         install_requires=[
             'tldextract',
         ],
