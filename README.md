@@ -33,6 +33,8 @@ The only thing to be careful of is the match, for example you can't use `p` for 
 
 Additionally the data the tool outputs uses a delimiter based on the items you choose, so if you choose `domain` and `tld` it will be outputed as: `<domain>.<tld>`. You can change this delimiter value with the `-d` operator after you specify the items to filter out. If you don't want a delimiter you can specify it as `-d''`.
 
+One extra thing to point out: the order of the items you specify is also how they are represented in the output.
+
 ## Bugs & Features
 
 Feel free to open issues for features or bugs you've found or do a pull request and you will be rewarded somewhere later in life for it.
