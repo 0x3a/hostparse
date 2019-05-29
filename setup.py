@@ -21,10 +21,14 @@ setup(
         install_requires=[
             'tldextract',
         ],
+        classifiers=[
+            "Programming Language :: Python :: 3",
+            "License :: OSI Approved :: MIT License",
+            "Operating System :: OS Independent",
+        ],
         entry_points={
             'console_scripts': [
                 'hostparse=hostparse:main',
             ],
         },
-        zip_safe=False,
      )
