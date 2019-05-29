@@ -1,6 +1,19 @@
 # hostparse
 `hostparse` - A command-line client for URL and hostname swizzling
 
+## Installation
+`hostparse` can be installed manually by cloning this repository, going to the main directory and typing:
+
+```
+pip install .
+```
+
+Or it can be installed using PyPI:
+
+```
+pip install hostparse
+```
+
 ## Usage
 `hostparse` installs as a commandline utility and takes input from stdin. In essence hostparse has a few simple parseable items it can extract from a URL. This is the full list of items:
 
