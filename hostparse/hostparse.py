@@ -42,10 +42,40 @@ DATA_MAPPER = dict(
     urlparse=None
 )
 
+# Taken from https://goodcode.io/articles/python-dict-object/
+class ObjDict(dict):
+    def from_dict(self, d):
+        for key, value in d.items():
+            self[key] = value
+
+        return self
+
+    def __getattr__(self, name):
+        if name in self:
+            return self[name]
+        else:
+            raise AttributeError("No such attribute: " + name)
+
+    def __setattr__(self, name, value):
+        self[name] = value
+
+    def __delattr__(self, name):
+        if name in self:
+            del self[name]
+        else:
+            raise AttributeError("No such attribute: " + name)
+
+def custom_parser(url):
+    o = ObjDict()
+    #o.filename = url[::-1].split('/')[0][::-1]
+    o.filename = urlparse.urlparse(url).path.split("/")[-1]
+    return o
+
 def fill_mappers(url):
     global DATA_MAPPER
     DATA_MAPPER['tldextract'] = tldextract.extract(url)
     DATA_MAPPER['urlparse'] = urlparse.urlparse(url)
+    DATA_MAPPER['custom'] = custom_parser(url)
 
 def mapper_func(obj_val):
     return getattr(DATA_MAPPER[obj_val[0]], obj_val[1])
@@ -64,7 +94,7 @@ KEYWORD_MAPPER = {
     "tld": ('tldextract', 'suffix'),
     "port": ('urlparse', 'port'),
     "path": ('urlparse', 'path'),
-    #"filename": yield_basename(mapper_func(('urlparse', 'path'))),
+    "filename": ('custom', 'filename'),
     "params": ('urlparse', 'params'),
     "query": ('urlparse', 'query'),
     "fragment": ('urlparse', 'fragment'),
