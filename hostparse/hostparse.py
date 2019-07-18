@@ -7,7 +7,7 @@ import difflib
 import argparse
 from itertools import tee
 
-# Py3 compatible
+# py3 "compatible"
 try:
     import urlparse
 except:
@@ -15,6 +15,11 @@ except:
 
 import tldextract
 
+
+"""
+    The tool is very simple and just maps -known- arguments through an objector dict. 
+    It might not be pretty but its surprisingly efficient.
+"""
 
 # Taken from: https://mail.python.org/pipermail/tutor/2003-November/026645.html
 class Unbuffered(object):
@@ -33,21 +38,11 @@ class Unbuffered(object):
 # Remove buffering, processing large datasets eats memory otherwise
 sys.stdout = Unbuffered(sys.stdout)
 
-"""
-    The tool is very simple and just maps -known- arguments through mapper dicts. The dict maps to functions which
-    return generators to retrieve global parsed data. It might not be pretty but its surprisingly efficient.
-"""
-DATA_MAPPER = dict(
-    tldextract=None,
-    urlparse=None
-)
-
 # Taken from https://goodcode.io/articles/python-dict-object/
 class ObjDict(dict):
     def from_dict(self, d):
         for key, value in d.items():
             self[key] = value
-
         return self
 
     def __getattr__(self, name):
@@ -65,41 +60,43 @@ class ObjDict(dict):
         else:
             raise AttributeError("No such attribute: " + name)
 
-def custom_parser(url):
+def parse_url(url):
     o = ObjDict()
-    #o.filename = url[::-1].split('/')[0][::-1]
-    o.filename = urlparse.urlparse(url).path.split("/")[-1]
+    p_url = urlparse.urlparse(url)
+    t_url = tldextract.extract(url)
+
+    o.filename = p_url.path.split("/")[-1]
+    o.scheme = p_url.scheme
+    o.username = p_url.username
+    o.password = p_url.password
+    o.subdomain = t_url.subdomain
+    o.domain = t_url.domain
+    o.tld = t_url.suffix
+    o.hostname = p_url.hostname
+    o.suffix = t_url.suffix
+    o.port = p_url.port
+    o.path = p_url.path
+    o.params = p_url.params
+    o.query = p_url.query
+    o.fragment = p_url.fragment
+
     return o
 
-def fill_mappers(url):
-    global DATA_MAPPER
-    DATA_MAPPER['tldextract'] = tldextract.extract(url)
-    DATA_MAPPER['urlparse'] = urlparse.urlparse(url)
-    DATA_MAPPER['custom'] = custom_parser(url)
-
-def mapper_func(obj_val):
-    return getattr(DATA_MAPPER[obj_val[0]], obj_val[1])
-
-# People will scream at me for this, I like generators.
-def yield_basename(obj_val):
-    yield os.path.basename(mapper_func(obj_val))
-
-KEYWORD_MAPPER = {
-    "scheme": ('urlparse', 'scheme'),
-    "username": ('urlparse', 'username'),
-    "password": ('urlparse', 'password'),
-    "subdomain": ('tldextract', 'subdomain'),
-    "domain": ('tldextract', 'domain'),
-    "hostname": ('urlparse', 'hostname'),
-    "tld": ('tldextract', 'suffix'),
-    "port": ('urlparse', 'port'),
-    "path": ('urlparse', 'path'),
-    "filename": ('custom', 'filename'),
-    "params": ('urlparse', 'params'),
-    "query": ('urlparse', 'query'),
-    "fragment": ('urlparse', 'fragment'),
-}
-
+KEYWORDS = [
+    'username',
+    'domain',
+    'fragment',
+    'query',
+    'path',
+    'password',
+    'port',
+    'subdomain',
+    'hostname',
+    'filename',
+    'params',
+    'tld',
+    'scheme'
+]
 
 def process_args():
     parser = argparse.ArgumentParser(prog='hostparse')
@@ -112,7 +109,7 @@ def process_args():
 
     format_str = []
     for format_keyword in args.format.split(','):
-        km = [item for item in KEYWORD_MAPPER.keys() if item.startswith(format_keyword)]
+        km = [item for item in KEYWORDS if item.startswith(format_keyword)]
         if len(km) > 1:
             parser.error("Supplied format key '{k}' isn't specific enough, matches multiple keywords ({m}).".format(k=format_keyword, m=','.join(km)))
 
@@ -125,9 +122,8 @@ def process_args():
 
 
 def main():
-    args, delim = process_args()
-    for line in sys.stdin.readlines():
+    format_str, delim = process_args()
+    for line in sys.stdin:
         line = line.rstrip()
-        fill_mappers(line)
-        print(delim.join([mapper_func(KEYWORD_MAPPER[fk]) for fk in args]))
+        print(delim.join([getattr(parse_url(line), fk) for fk in format_str]))
 
