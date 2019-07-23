@@ -34,7 +34,6 @@ class Unbuffered(object):
    def __getattr__(self, attr):
        return getattr(self.stream, attr)
 
-
 # Remove buffering, processing large datasets eats memory otherwise
 sys.stdout = Unbuffered(sys.stdout)
 

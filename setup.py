@@ -3,15 +3,12 @@
 import os
 from setuptools import setup, find_packages
 
-# Avoid pulling in external modules that still need to be installed via install_requires
-from hostparse import __version__ as hpv
-
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
         name = 'hostparse',
-        version = hpv,
+        version = "0.0.6",
         author = 'Yonathan Klijnsma',
         author_email = 'admin@0x3a.com',
         url = 'https://github.com/0x3a/hostparse',
