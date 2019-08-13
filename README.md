@@ -48,6 +48,10 @@ Additionally the data the tool outputs uses a delimiter based on the items you c
 
 One extra thing to point out: the order of the items you specify is also how they are represented in the output.
 
+## Demo
+
+![demo](demo.gif)
+
 ## Bugs & Features
 
 Feel free to open issues for features or bugs you've found or do a pull request and you will be rewarded somewhere later in life for it.
